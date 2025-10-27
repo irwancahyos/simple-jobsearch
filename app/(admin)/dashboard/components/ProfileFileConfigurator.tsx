@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Choice = "mandatory" | "optional" | "off";
 
@@ -27,24 +27,21 @@ export default function ProfileFieldsConfigurator({ fields, onChange }: Props) {
   const initialState = useMemo(() => {
     const s: Record<string, Choice> = {};
     fields.forEach((f) => {
-      if (f.fixedMandatory) s[f.id] = "mandatory";
-      else s[f.id] = f.initial ?? "optional";
+      if (f.fixedMandatory) s[f.id] = 'mandatory';
+      else s[f.id] = f.initial ?? 'optional';
     });
     return s;
   }, [fields]);
 
   const [state, setState] = useState<Record<string, Choice>>(initialState);
 
-  const setField = (id: string, value: Choice) => {
-    setState((prev) => {
-      const next = { ...prev, [id]: value };
-      onChange?.(next);
-      return next;
-    });
-  };
+useEffect(() => {
+  onChange?.(state);
+}, [state, onChange]);
 
-console.log(state, 'ini statetnya');
-
+const setField = (id: string, value: Choice) => {
+  setState((prev) => ({ ...prev, [id]: value }));
+};
 
   return (
     <div className="divide-y divide-[#F0F0F0]">

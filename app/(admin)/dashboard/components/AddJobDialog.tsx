@@ -80,7 +80,6 @@ export const AddJobDialog = ({
   }
 
   const handleProfileFieldChange = (value:Record<string, Choice>) => {
-    console.log('open pertama nih')
     setProfileFields(value);
   }
 

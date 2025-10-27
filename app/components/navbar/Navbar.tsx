@@ -1,7 +1,10 @@
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import Image from 'next/image'
-import { LogOut } from 'lucide-react';
+import { ChevronRight, LogOut } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation'
+
 
 // Local interface
 interface NavbarProps {
@@ -10,10 +13,28 @@ interface NavbarProps {
 }
 
 const Navbar = ({title = "Job List", userDetail}: NavbarProps) => {
+
+  const params = useParams();
+  const isJobIdExist = Boolean(params?.id);
+  
   return (
     <nav className="w-full shadow-md flex justify-center fixed z-50 bg-white top-0 px-5">
-      <div className='flex items-center justify-between py-1 w-full min-h-14 max-w-[1400px]'>
-        <span className="text-[14px] md:text-[18px] font-bold">{title}</span>
+      <div className="flex items-center justify-between py-1 w-full min-h-14 max-w-[1400px]">
+        {isJobIdExist ? (
+          <div className="flex items-center gap-[8px]">
+            <button className="px-[1rem] py-[4px] rounded-[8px] border border-[#E0E0E0] shadow font-bold text-[0.875rem] text-[#1D1F20] cursor-pointer hover:bg-[#f5f5f5]">
+              Job list
+            </button>
+            <div>
+              <ChevronRight className="w-[24px] h-[24px]" />
+            </div>
+            <button className="px-[1rem] py-[4px] rounded-[8px] border border-[#C2C2C2] font-bold text-[0.875rem] text-[#1D1F20] bg-[#EDEDED]">
+              Manage Candidate
+            </button>
+          </div>
+        ) : (
+          <span className="text-[14px] md:text-[18px] font-bold">{title}</span>
+        )}
         <HoverCard openDelay={10}>
           <HoverCardTrigger>
             <button className="w-[35px] h-[35px] rounded-full overflow-hidden border-2 focus:outline-none cursor-pointer">
@@ -43,7 +64,5 @@ const Navbar = ({title = "Job List", userDetail}: NavbarProps) => {
     </nav>
   );
 }
-
-// 1,440px
 
 export default Navbar;

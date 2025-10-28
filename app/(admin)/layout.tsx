@@ -4,7 +4,6 @@ import { Footer } from "../components/footer/Footer"
 import Navbar from "../components/navbar/Navbar"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-
   return (
     <div className="bg-white/10">
       <div className="flex flex-col pt-16">

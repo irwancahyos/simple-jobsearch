@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+// ********** Local interface **********
 interface InputSelectProps {
   label?: string;
   required?: boolean;
@@ -24,6 +25,7 @@ interface InputSelectProps {
   options?: { label: string; value: string }[];
 }
 
+// ********** Main Component **********
 const InputSelect: React.FC<InputSelectProps> = ({
   label,
   required,
@@ -38,8 +40,6 @@ const InputSelect: React.FC<InputSelectProps> = ({
   options = [],
 }) => {
 
-  console.log(value, 'ini value')
-
   const errorClasses = 'border-2 border-(--error-color)';
   return (
     <div className="space-y-1.5">
@@ -53,10 +53,10 @@ const InputSelect: React.FC<InputSelectProps> = ({
       )}
 
       <div className={cn('relative', className, errorMessage && errorClasses)}>
-        {/* Prefix (opsional) */}
+        {/* ********** Prefix (optional) ********** */}
         {prefix && <div className="absolute left-3 flex items-center text-gray-500 z-10">{prefix}</div>}
 
-        {/* Select utama */}
+        {/* ********** Main Select ********** */}
         <Select value={value} onValueChange={onValueChange} disabled={disabled}>
           <SelectTrigger
             id={label}
@@ -75,11 +75,11 @@ const InputSelect: React.FC<InputSelectProps> = ({
           </SelectContent>
         </Select>
 
-        {/* Suffix (opsional) */}
+        {/* ********** Suffix (optional) ********** */}
         {suffix && <div className="absolute right-3 flex items-center text-gray-500 z-10">{suffix}</div>}
       </div>
 
-      {/* Error message (opsional) */}
+      {/* ********** Error message (optional) ********** */}
       {errorMessage && <p className="text-[#E11428] text-[0.75rem]">{errorMessage}</p>}
     </div>
   );

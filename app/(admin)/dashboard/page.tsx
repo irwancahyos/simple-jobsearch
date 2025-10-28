@@ -1,56 +1,102 @@
-'use client'
+'use client';
 
-import InputText from '@/app/components/input/InputText';
+import toast, { Toaster } from 'react-hot-toast';
+import { Search, Plus } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
+
 import addNewJobImage from '../../../asset/image/image-add-job.jpg';
 import emptyJobListImage from '../../../asset/image/image-no-job.png';
-import { Search, Plus } from 'lucide-react';
-import { JobListCard } from './JobListCard';
+
+import { supabase } from '@/lib/supabaseClient';
+import { cn } from '@/lib/utils';
+
+import InputText from '@/app/components/input/InputText';
+import { JobsData } from '@/app/models/adminModel';
+import { JobListCardSkeleton } from '@/app/components/skeletons/adminSkeletons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import Image from 'next/image';
+
+import { JobListCard } from './JobListCard';
 import { AddJobDialog } from './components/AddJobDialog';
-import { useState } from 'react';
 
 const AdminDashboard = () => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [jobs, setJobs] = useState<JobsData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const isAvailableJobs = jobs.length > 0;
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const fetchJobs = async (query = '') => {
+    setIsLoading(true);
+    let supabaseQuery = supabase.from('jobs').select('*').order('created_at', { ascending: false });
+
+    if (query) {
+      supabaseQuery = supabaseQuery.ilike('title', `%${query}%`);
+    }
+
+    const { data, error } = await supabaseQuery;
+    if (error) toast.error('Failed to load data jobs!');
+    else setJobs(data ?? []);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  useEffect(() => {
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+
+    debounceTimeout.current = setTimeout(() => {
+      fetchJobs(searchTerm);
+    }, 300);
+
+    return () => {
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    };
+  }, [searchTerm]);
 
   return (
-    <div className="flex-1 flex gap-7 max-w-[1400px] overflow-y-scroll h-screen px-1">
+    <div className="scrollbar-custom flex-1 flex gap-7 max-w-[1400px] overflow-y-auto h-screen px-1">
       <div className="flex-1 flex flex-col gap-[1rem] bg-white">
+        {/* Search Input */}
         <InputText
+          onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search by job details"
           suffix={<Search className="text-[#01959F]" size={24} />}
           className="relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#757575] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11"
         />
-        {/* <div className="space-y-2 pb-2"> */} {/* when job is exist */}
-        <div className="flex w-full h-full justify-center items-center">
-          {' '}
-          {/* when no job exist */}
-          {/* <JobListCard />
-          <JobListCard />
-          <JobListCard />
-          <JobListCard />
-          <JobListCard />
-          <JobListCard />
-          <JobListCard /> */}
-          <div className="flex flex-col items-center gap-4">
-            <Image src={emptyJobListImage?.src} width={200} height={200} alt="empty job list image" className={''} />
-            <div className="flex flex-col gap-3 items-center">
-              <div className="flex gap-1 flex-col items-center">
-                <p className="text-[#404040] font-bold text-[1rem] sm:text-[1.25rem]">No job openings available</p>
-                <p className="text-[#404040] text-[0.75rem] sm:text-[1rem]">Create a job opening now and start the candidate process.</p>
-              </div>
-              <div>
-                <button
-                  onClick={() => setOpenDialog(!openDialog)}
-                  className="px-[1rem] py-[6px] rounded-[8px] text-[#404040] text-[1rem] font-bold bg-[#FBC037] hover:bg-[#f5b621] cursor-pointer  shadow"
-                >
-                  Create a new job
-                </button>
+
+        {/* Conditional render Job List */}
+        <div className={cn(isAvailableJobs || isLoading ? 'space-y-2 pb-2' : 'flex w-full flex-col h-full justify-center items-center')}>
+          {isLoading ? (
+            <JobListCardSkeleton />
+          ) : isAvailableJobs ? (
+            jobs.map((el, idx) => <JobListCard {...el} key={idx} />)
+          ) : (
+            <div className="flex flex-col items-center gap-4">
+              <Image src={emptyJobListImage?.src} width={200} height={200} alt="empty job list image" className={''} />
+              <div className="flex flex-col gap-3 items-center">
+                <div className="flex gap-1 flex-col items-center">
+                  <p className="text-[#404040] font-bold text-[1rem] sm:text-[1.25rem]">No job openings available</p>
+                  <p className="text-[#404040] text-[0.75rem] sm:text-[1rem]">Create a job opening now and start the candidate process.</p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => setOpenDialog(!openDialog)}
+                    className="px-[1rem] py-[6px] rounded-[8px] text-[#404040] text-[1rem] font-bold bg-[#FBC037] hover:bg-[#f5b621] cursor-pointer  shadow"
+                  >
+                    Create a new job
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
+
+      {/* Right create job card */}
       <div className="w-[300px] hidden lg:block">
         <div
           className="relative rounded-2xl w-full bg-cover bg-no-repeat p-6 overflow-hidden flex flex-col gap-6"
@@ -70,6 +116,8 @@ const AdminDashboard = () => {
           </button>
         </div>
       </div>
+
+      {/* Create job on mobile */}
       <Tooltip>
         <TooltipTrigger
           onClick={() => setOpenDialog(!openDialog)}
@@ -81,9 +129,12 @@ const AdminDashboard = () => {
           <p>Create new job</p>
         </TooltipContent>
       </Tooltip>
-      <AddJobDialog isOpen={openDialog} onOpenChange={setOpenDialog} />
+
+      {/* Toast and Popuop Add Job Form */}
+      <AddJobDialog isOpen={openDialog} onOpenChange={setOpenDialog} onJobCreated={() => fetchJobs(searchTerm)} />
+      <Toaster position="bottom-left" />
     </div>
   );
-} 
+};
 
 export default AdminDashboard;

@@ -2,8 +2,9 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import ManageTable from "../../components/ManageTable";
 import Image from "next/image";
+
+import ManageTable from "../../components/ManageTable";
 import noCandidateFound from '../../../../../asset/image/No Candidate Found.png'
 import { cn } from "@/lib/utils";
 
@@ -20,12 +21,10 @@ type Applicant = {
 export default function ManageJobPage() {
   const params = useParams();
   const jobId = params.id;
-
   const [applicants, setApplicants] = useState<Applicant[]>([]);
 
-  // Simulate fetching applicants
   useEffect(() => {
-    // Dummy data
+    // Dummy data for table (temporary)
     const dummyApplicants: Applicant[] = [
       { id: "1", name: "Alice Johnson", email: "alice@email.com", phone: "081234567890", status: "Applied" },
       { id: "2", name: "Bob Smith", email: "bob@email.com", phone: "081234567891", status: "Interviewed" },
@@ -103,7 +102,8 @@ export default function ManageJobPage() {
           {dummyData?.data?.length ? (
             <ManageTable data={dummyData?.data} />
           ) : (
-            <div className="flex flex-col flex-1 justify-center items-center gap-4">
+            // No data exist handliong
+            <div className="flex h-full flex-col flex-1 justify-center items-center gap-4">
               <Image
                 src={noCandidateFound?.src}
                 width={200}
@@ -113,8 +113,8 @@ export default function ManageJobPage() {
               />
               <div className="flex flex-col gap-3 items-center">
                 <div className="flex gap-1 flex-col text-center items-center">
-                  <p className="text-[#404040] font-bold text-[1rem] sm:text-[1.25rem]">No job openings available</p>
-                  <p className="text-[#404040] text-[0.75rem] sm:text-[1rem]">Create a job opening now and start the candidate process.</p>
+                  <p className="text-[#404040] font-bold text-[1rem] sm:text-[1.25rem]">No candidates found</p>
+                  <p className="text-[#404040] text-[0.75rem] sm:text-[1rem]">Share your job vacancies so that more candidates will apply.</p>
                 </div>
               </div>
             </div>

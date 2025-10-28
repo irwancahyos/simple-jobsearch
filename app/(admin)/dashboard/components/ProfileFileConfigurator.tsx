@@ -9,21 +9,21 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useMemo, useState } from "react";
 
+// ********** Local Type and Interface **********
 type Choice = "mandatory" | "optional" | "off";
-
 type FieldConfig = {
   id: string;
   label: string;
-  fixedMandatory?: boolean; // contoh: name, email, phone
+  fixedMandatory?: boolean;
   initial?: Choice;
 };
-
 interface Props {
   fields: FieldConfig[];
   onChange?: (state: Record<string, Choice>) => void;
 }
 
-export default function ProfileFieldsConfigurator({ fields, onChange }: Props) {
+// ********** Main component **********
+const ProfileFieldsConfigurator = ({ fields, onChange }: Props) => {
   const initialState = useMemo(() => {
     const s: Record<string, Choice> = {};
     fields.forEach((f) => {
@@ -107,3 +107,5 @@ const setField = (id: string, value: Choice) => {
     </div>
   );
 }
+
+export default ProfileFieldsConfigurator;

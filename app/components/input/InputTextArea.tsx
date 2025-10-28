@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import React, { ChangeEvent } from "react";
 
+// ********** Local interface **********
 interface TextAreaProps {
   value?: string;
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
@@ -13,6 +14,7 @@ interface TextAreaProps {
   rows?: number;
 }
 
+// ********** Main Component **********
 const InputTextArea: React.FC<TextAreaProps> = ({
   value,
   onChange,

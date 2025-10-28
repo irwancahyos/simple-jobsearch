@@ -49,6 +49,7 @@
   --error-color: #E11428;
   --secondary-button-hover: #02828b;
   --secondary-color: #01959F;
+  --secondary-color-scroll: #01959F;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.13 0.028 261.692);
@@ -81,6 +82,9 @@
   --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
+  --primary: #f1f1f1;
+  --secondary: rgba(31, 209, 253, 0.4);
+  --tertiary: rgba(31, 209, 253, 0.6);
 }
 
 .dark {
@@ -117,10 +121,66 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+/* resize and reorder table classes */
 th, td {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+/* *::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #E6E6E6;
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+} */
+
+@layer components {
+  @media (min-width: 768px) {
+    .scrollbar-custom::-webkit-scrollbar {
+      width: 8px;
+    }
+    .scrollbar-custom::-webkit-scrollbar-track {
+      background-color: #E6E6E6;
+      border-radius: 5px;
+    }
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+      background-color: var(--secondary-color-scroll);
+      border-radius: 8px;
+    }
+  }
+}
+
+.react-calendar {
+  border: none !important;
+}
+
+.react-calendar__navigation {
+  color: #404040 !important;  
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+}
+
+@layer components {
+  @media (min-width: 768px) {
+    .scrollbar-candidate-jobs-custom::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-candidate-jobs-custom::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+    .scrollbar-candidate-jobs-custom::-webkit-scrollbar-thumb {
+      background-color: #C2C2C2;
+      border-radius: 8px;
+    }
+  }
 }
 
 @layer base {

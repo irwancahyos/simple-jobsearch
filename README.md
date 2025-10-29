@@ -1,10 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Project Overview
+This is a [Next.js](https://nextjs.org) project who build to complete recruitment task in some company. This Project is show the job portal platform who allow 2 role to login as Recruiter or Job Seekers. As admin you can create job and able to manage job relate with you and as candidate you can apply all active job show to you in /jobs. Here the platform contains CRUD with some middle level feature for example Capture Profile Pict with Gesture and Reorder and Resizing column.
 
-## Getting Started
+## Tech Stack
+- Next Js
+- Tailwind Css
+- Zustand
+- Sacdn UI
+- React Hooks Form
+- Supabase (Database and API)
+
+## Getting Started (Run locally)
 
 First, run the development server:
 
 ```bash
+clone repository
+npm install to add node module
+# then
 npm run dev
 # or
 yarn dev
@@ -19,15 +31,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 

@@ -59,7 +59,6 @@ const RecruiterRegister = () => {
       router.push('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Gagal membuat akun, coba lagi.');
-      console.error(err);
     }
   };
 

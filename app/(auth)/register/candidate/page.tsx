@@ -60,7 +60,6 @@ const CandidateRegister = () => {
       router.push('/jobs');
     } catch (err: any) {
       toast.error(err.message || 'Gagal membuat akun, coba lagi.');
-      console.error(err);
     }
   };
 

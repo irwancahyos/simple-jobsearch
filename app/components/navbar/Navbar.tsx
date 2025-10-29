@@ -85,16 +85,16 @@ const Navbar = ({title, userDetail, candidatePage = false}: NavbarProps) => {
 
       {/* ********** Logout Confirmation Dialog ********** */}
       <Dialog open={openLogoutDialog} onOpenChange={(open) => setOpenLogoutDialog(open)}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="w-[400px]">
           <DialogHeader>
             <DialogTitle>Konfirmasi Logout</DialogTitle>
           </DialogHeader>
-          <p>Apakah kamu yakin ingin logout?</p>
+          <p>Yakin untuk keluar ?</p>
           <DialogFooter className="flex justify-end gap-2 mt-4">
             <Button className='cursor-pointer' variant="outline" onClick={() => setOpenLogoutDialog(false)}>
               Tidak
             </Button>
-            <Button className='cursor-pointer' variant="destructive" onClick={handleLogout}>
+            <Button className='cursor-pointer bg-(--error-color) hover:bg-(--error-color)/80' onClick={handleLogout}>
               Ya
             </Button>
           </DialogFooter>

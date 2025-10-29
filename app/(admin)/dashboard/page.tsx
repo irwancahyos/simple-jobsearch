@@ -75,7 +75,7 @@ const AdminDashboard = () => {
           {isLoading ? (
             <JobListCardSkeleton />
           ) : isAvailableJobs ? (
-            jobs.map((el, idx) => <JobListCard {...el} key={idx} />)
+            jobs.map((el, idx) => <JobListCard onJobCreated={() => fetchJobs(searchTerm)} jobData={el}  key={idx} />)
           ) : (
             <div className="flex flex-col items-center gap-4">
               <Image src={emptyJobListImage?.src} width={200} height={200} alt="empty job list image" className={''} />

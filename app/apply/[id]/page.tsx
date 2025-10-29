@@ -202,7 +202,7 @@ const ApplyJobPage = () => {
         toast.error('Failed to submit application.');
       } else {
         toast.success('Application submitted successfully!');
-        router.push('/jobs');
+        router.push('/thankyou');
       }
     } catch (err) {
       console.error('Unexpected error:', err);

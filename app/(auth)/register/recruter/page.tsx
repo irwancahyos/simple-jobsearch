@@ -1,24 +1,26 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { Eye, EyeOff } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 
-import InputText from '@/app/components/input/InputText'
-import toast, { Toaster } from 'react-hot-toast'
-import { supabase } from '@/lib/supabaseClient'
-import { cn } from '@/lib/utils'
+import InputText from '@/app/components/input/InputText';
+import toast, { Toaster } from 'react-hot-toast';
+import { supabase } from '@/lib/supabaseClient';
+import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 // ********** Local Interface **********
 type RegisterRecruiterForm = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 // ********** Main Component **********
 const RecruiterRegister = () => {
-  const [isOpenEye, setIsOpenEye] = useState(false)
+  const [isOpenEye, setIsOpenEye] = useState(false);
+  const router = useRouter();
 
   const {
     control,
@@ -27,28 +29,39 @@ const RecruiterRegister = () => {
     formState: { errors, isSubmitting },
   } = useForm<RegisterRecruiterForm>({
     defaultValues: { email: '', password: '' },
-    mode: 'all'
-  })
+    mode: 'all',
+  });
 
   const onSubmit = async (data: RegisterRecruiterForm) => {
     try {
-      const { data: signUpData, error } = await supabase.auth.signUp({
-        email: data.email,
+      const emailTrimmed = data.email.trim().toLowerCase();
+
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: emailTrimmed,
         password: data.password,
-        options: {
-          data: { role: "candidate" },
-        },
-      })
+      });
+      if (signUpError) throw signUpError;
 
-      if (error) throw error
+      const userId = signUpData.user?.id;
+      if (!userId) throw new Error('Gagal mendapatkan ID user');
 
-      toast.success("Akun berhasil dibuat 🎉")
-      reset()
-    } catch (err) {
-      toast.error("Gagal membuat akun, coba lagi.")
-      console.error(err)
+      const { error: profileError } = await supabase.from('profiles').insert([{ id: userId, email: emailTrimmed, role: 'recruiter' }]);
+      if (profileError) throw profileError;
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: emailTrimmed,
+        password: data.password,
+      });
+      if (signInError) throw signInError;
+
+      toast.success('Akun berhasil dibuat 🎉');
+      reset();
+      router.push('/dashboard');
+    } catch (err: any) {
+      toast.error(err.message || 'Gagal membuat akun, coba lagi.');
+      console.error(err);
     }
-  }
+  };
 
   return (
     <div className="w-full bg-white shadow flex p-[20px] md:p-[40px]">
@@ -90,7 +103,7 @@ const RecruiterRegister = () => {
               )}
             />
 
-            {/* ********** Password ********** */}
+            {/* Password */}
             <Controller
               name="password"
               control={control}
@@ -121,7 +134,7 @@ const RecruiterRegister = () => {
             />
           </div>
 
-          {/* ********** Submit Button ********** */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -143,6 +156,6 @@ const RecruiterRegister = () => {
       </div>
     </div>
   );
-}
+};
 
-export default RecruiterRegister
+export default RecruiterRegister;

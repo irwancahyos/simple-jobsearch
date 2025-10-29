@@ -22,6 +22,7 @@ import { supabase } from "@/lib/supabaseClient"
 import InputText from "@/app/components/input/InputText"
 import InputSelect from "@/app/components/input/InputSelect"
 import InputTextArea from "@/app/components/input/InputTextArea"
+import { useUserStore } from "@/app/store/userStore";
 
 // ********** Local Interface **********
 type Choice = "mandatory" | "optional" | "off";
@@ -88,6 +89,7 @@ export const AddJobDialog = ({
 
   const [loading, setLoading] = useState(false);
   const [profileFields, setProfileFields] = useState<Record<string, any>>(initialProfileState);
+  const { profile } = useUserStore();
 
   const successToast = () => toast.success('Job vacancy successfully created');
   const errorToast = () => toast.success('Filled to create job vancacy!');
@@ -120,6 +122,7 @@ export const AddJobDialog = ({
   const structurePayload = (data: JobForm) => {
     const payload = {
         id: `job_${uuidv4()}`,
+        owner_id: profile?.id,
         title: data.jobName,
         job_type: data.jobType,
         slug: slugify(data?.jobName),

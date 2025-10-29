@@ -1,56 +1,88 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { Eye, EyeOff } from 'lucide-react'
-import Link from 'next/link'
-import toast, { Toaster } from 'react-hot-toast'
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import toast, { Toaster } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
-import InputText from '@/app/components/input/InputText'
-import { supabase } from '@/lib/supabaseClient'
-import { cn } from '@/lib/utils'
+import InputText from '@/app/components/input/InputText';
+import { supabase } from '@/lib/supabaseClient';
+import { cn } from '@/lib/utils';
+import Cookies from 'js-cookie'
+import { useUserStore } from '@/app/store/userStore';
 
 // ********** Local Interface **********
-type RegisterRecruiterForm = {
-  email: string
-  password: string
-}
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 // ********** Main Component **********
 const LoginComponent = () => {
-  const [isOpenEye, setIsOpenEye] = useState(false)
+  const { setProfile } = useUserStore();
+  const [isOpenEye, setIsOpenEye] = useState(false);
+  const router = useRouter();
 
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterRecruiterForm>({
+  } = useForm<LoginForm>({
     defaultValues: { email: '', password: '' },
-    mode: 'all'
-  })
+    mode: 'all',
+  });
 
-  const onSubmit = async (data: RegisterRecruiterForm) => {
+  const onSubmit = async (data: LoginForm) => {
     try {
-      const { email, password } = data;
+      const emailTrimmed = data.email.trim().toLowerCase();
 
-      // ********** Supabase Sign In **********
-      const { data: loginData, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // ********** Sign In **********
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+        email: emailTrimmed,
+        password: data.password,
       });
 
-      if (error) {
-        toast.error(error.message || 'Gagal login, periksa kembali data Anda.');
-        return;
-      }
+      if (loginError) throw loginError;
+      if (!loginData.user) throw new Error('User not found');
 
-      toast.success('Berhasil login 🎉');
+      const { data: profile, error: profileError } = await supabase.from('profiles').select('role').eq('id', loginData.user.id).single();
+
+      if (profileError) throw profileError;
+      if (!profile?.role) throw new Error('Role is not found');
+
+      // ********** sava in loaclstorage and session **********
       localStorage.setItem('user', JSON.stringify(loginData.session));
-      window.location.href = '/dashboard';
-    } catch (err) {
-      console.error(err);
-      toast.error('Terjadi kesalahan tak terduga.');
+      localStorage.setItem(
+        'userProfile',
+        JSON.stringify({
+          id: loginData.user.id,
+          email: loginData.user.email,
+          role: profile.role,
+        }),
+      );
+      setProfile({
+        id: loginData.user.id,
+        email: loginData?.user.email || '',
+        role: loginData.user.user_metadata.role,
+      });
+
+      toast.success('Success login');      
+      
+      // ********** save to cookie to allow session per user **********
+      Cookies.set('role', profile.role, { expires: 7 })
+
+      // ********** Redirect sesuai role **********
+      if (profile.role === 'recruiter') {
+        router.push('/dashboard')
+      } else if (profile.role === 'candidate') {
+        router.push('/jobs')
+      } else {
+        toast.error('Role is not valid');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'random error');
     }
   };
 
@@ -58,7 +90,7 @@ const LoginComponent = () => {
     <div className="w-full bg-white shadow flex p-[20px] md:p-[40px]">
       <Toaster position="top-right" />
       <div className="w-full flex flex-col gap-3">
-        {/* ********** Header ********** */}
+        {/* Header */}
         <div className="flex flex-col gap-[8px]">
           <h1 className="text-[#404040] text-[1.25rem] font-semibold">Masuk ke Rakamin</h1>
           <p className="text-[0.875rem] font-normal text-[#404040]">
@@ -69,7 +101,7 @@ const LoginComponent = () => {
           </p>
         </div>
 
-        {/* ********** Form ********** */}
+        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[14px]">
           <div className="flex flex-col gap-1.5">
             {/* Email */}
@@ -89,7 +121,7 @@ const LoginComponent = () => {
                   placeholder="Ex. dio@raka.com"
                   label="Alamat email"
                   errorMessage={errors?.email?.message}
-                  className={`relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11 max-h-[40px]`}
+                  className="relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11 max-h-[40px]"
                 />
               )}
             />
@@ -108,8 +140,9 @@ const LoginComponent = () => {
               render={({ field }) => (
                 <InputText
                   {...field}
-                  placeholder=""
                   type={isOpenEye ? 'text' : 'password'}
+                  label="Kata sandi"
+                  placeholder=""
                   errorMessage={errors?.password?.message}
                   suffix={
                     isOpenEye ? (
@@ -118,8 +151,7 @@ const LoginComponent = () => {
                       <EyeOff size={14} onClick={() => setIsOpenEye(!isOpenEye)} className="cursor-pointer" />
                     )
                   }
-                  label="Kata sandi"
-                  className={`relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11 max-h-[40px]`}
+                  className="relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11 max-h-[40px]"
                 />
               )}
             />
@@ -147,6 +179,6 @@ const LoginComponent = () => {
       </div>
     </div>
   );
-}
+};
 
 export default LoginComponent;

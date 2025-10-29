@@ -2,20 +2,23 @@
 
 import { ArrowLeft, Upload } from "lucide-react";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from 'react-hot-toast';
+import { useForm, Controller } from "react-hook-form";
+
 import uploadImageAvatar from '../../../asset/image/upload-avatar.png';
+import { DOMICILE } from "@/data/domicile";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { supabase } from '@/lib/supabaseClient';
+
 import InputText from "@/app/components/input/InputText";
 import InputDatePicker from "@/app/components/input/InputDatePicker";
 import InputRadioGroup from "@/app/components/input/InputRadioGroup";
 import InputSelectSearch from "@/app/components/input/InputSelectSearch";
-import { DOMICILE } from "@/data/domicile";
 import InputDialCode from "@/app/components/input/InputDialCode";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useParams, useRouter } from "next/navigation";
-import { supabase } from '@/lib/supabaseClient';
-import { useEffect, useState } from "react";
-import toast, { Toaster } from 'react-hot-toast';
 import { ApplyPageSkeleton } from "@/app/components/skeletons/candidatesSkeleton";
-import { useForm, Controller } from "react-hook-form";
+import HandCaptureModal from "@/app/components/hand-capture/HandCaptureModal";
 
 // ********** Local Interface and Type **********
 type ApplyFormData = {
@@ -26,6 +29,7 @@ type ApplyFormData = {
   phoneNumber: string;
   email: string;
   linkedin: string;
+  profilePict: string
 };
 
 type FieldValidation = {
@@ -78,6 +82,7 @@ const FIELD_KEY_MAP = {
   phoneNumber: 'phone',
   email: 'email',
   linkedin: 'linkedin',
+  profilePict: "profile-pict"
 };
 
 const getValidationRules = (job: JobType | null, fieldName: keyof ApplyFormData): RHFValidationRules => {
@@ -117,14 +122,17 @@ const shouldRenderField = (job: JobType | null, fieldName: keyof ApplyFormData):
 
 // ********** Main Component **********
 const ApplyJobPage = () => {
+
   const params = useParams();
   const jobId = params?.id;
   const router = useRouter();
 
   const [job, setJob] = useState<JobType | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
+  const [photoProfileUrl, setPhotoProfileUrl] = useState(uploadImageAvatar.src); 
 
-  const { handleSubmit, control, formState: { errors } } = useForm<ApplyFormData>({
+  const { handleSubmit, setValue, control, formState: { errors } } = useForm<ApplyFormData>({
     defaultValues: {
       fullName: "",
       dateOfBirth: "",
@@ -132,9 +140,17 @@ const ApplyJobPage = () => {
       domicile: "",
       phoneNumber: "",
       email: "",
-      linkedin: ""
+      linkedin: "",
+      profilePict: ""
     }
   });
+
+  const handleCaptureSuccess = (imageDataUrl: string) => {
+    setPhotoProfileUrl(imageDataUrl);
+    setValue('profilePict', imageDataUrl, { shouldValidate: true });
+    setIsCaptureModalOpen(false);
+    toast.success('Photo profile captured!');
+  };
 
   useEffect(() => {
     if (!jobId) return;
@@ -154,12 +170,50 @@ const ApplyJobPage = () => {
     fetchJob();
   }, [jobId]);
 
-  const onSubmit = (data: ApplyFormData) => {
-    console.log("Form data:", data);
-    toast.success("Form submitted successfully!");
+  const onSubmit = async (data: ApplyFormData) => {
+    setIsLoading(true);
+
+    try {
+      // Build attributes array dynamically
+      const attributes = Object.entries(renderField)
+        .filter(([fieldName, shouldRender]) => shouldRender && data[fieldName as keyof ApplyFormData])
+        .map(([fieldName], index) => {
+          let key = '', label = '';
+          switch(fieldName) {
+            case 'fullName': key='full_name'; label='Full Name'; break;
+            case 'email': key='email'; label='Email'; break;
+            case 'phoneNumber': key='phone'; label='Phone'; break;
+            case 'domicile': key='domicile'; label='Domicile'; break;
+            case 'gender': key='gender'; label='Gender'; break;
+            case 'linkedin': key='linkedin_link'; label='LinkedIn'; break;
+            case 'profilePict': key='profile_picture'; label='Profile Picture'; break;
+          }
+          return { key, label, value: data[fieldName as keyof ApplyFormData], order: index+1 };
+        });
+
+      // Insert to Supabase
+      const { error } = await supabase.from('applications').insert([{
+        job_id: jobId,
+        attributes
+      }]);
+
+      if (error) {
+        console.error('Error inserting application:', error);
+        toast.error('Failed to submit application.');
+      } else {
+        toast.success('Application submitted successfully!');
+        router.push('/jobs');
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast.error('Something went wrong.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const rules = {
+    profilePict: getValidationRules(job, 'profilePict'),
     fullName: getValidationRules(job, 'fullName'),
     dateOfBirth: getValidationRules(job, 'dateOfBirth'),
     gender: getValidationRules(job, 'gender'),
@@ -188,6 +242,7 @@ const ApplyJobPage = () => {
     phoneNumber: shouldRenderField(job, 'phoneNumber'),
     email: shouldRenderField(job, 'email'),
     linkedin: shouldRenderField(job, 'linkedin'),
+    profilePict: shouldRenderField(job, 'profilePict')
   };
 
   return (
@@ -198,7 +253,10 @@ const ApplyJobPage = () => {
         <div className="bg-white sm:border sm:border-[#E0E0E0] sm:shadow w-full flex flex-col gap-[24px] h-screen sm:h-full sm:max-h-[800px] sm:max-w-[600px] md:max-w-[700px] max-[450px]:py-[40px] max-[450px]:px-[20px] p-[40px]">
           {/* Apply header */}
           <div className="flex items-center gap-[1rem]">
-            <button onClick={() => router.push('/jobs')} className="w-[1.75rem] h-[1.75rem] bg-white hover:bg-[#f7f7f7] border p-1 shadow cursor-pointer border-[#E0E0E0] rounded-[8px] flex justify-center items-center">
+            <button
+              onClick={() => router.push('/jobs')}
+              className="w-[1.75rem] h-[1.75rem] bg-white hover:bg-[#f7f7f7] border p-1 shadow cursor-pointer border-[#E0E0E0] rounded-[8px] flex justify-center items-center"
+            >
               <ArrowLeft strokeWidth={3} className="w-[1.25] h-[1.25] text-[#333333] font-semibold" />
             </button>
             <div className="flex-1 flex justify-between items-center">
@@ -224,14 +282,35 @@ const ApplyJobPage = () => {
             </div>
             <div className="w-full flex flex-col gap-[1rem]">
               <label className="text-[#404040] text-[0.75rem] font-semibold">Photo Profile</label>
-              <Image alt="Upload image pict" src={uploadImageAvatar?.src} width={300} height={300} className="w-[8rem] h-[8rem]" />
-              <button
-                type="button"
-                className="w-fit border border-[#E0E0E0] px-[1rem] py-1 flex gap-1 items-center hover:bg-[#f7f6f6] rounded-[8px] cursor-pointer shadow"
-              >
-                <Upload className="w-[0.875rem] h-[0.875rem]" strokeWidth={3} />
-                <span className="text-[#1D1F20] text-[0.875rem] font-semibold">Take a Picture</span>
-              </button>
+              <Controller
+                name="profilePict"
+                control={control}
+                rules={rules.profilePict}
+                render={({ field, fieldState }) => (
+                  <>
+                    {/* Tampilkan Image */}
+                    <Image
+                      alt="Upload image pict"
+                      src={photoProfileUrl}
+                      width={300}
+                      height={300}
+                      className="w-[8rem] h-[8rem] object-cover rounded-full"
+                    />
+
+                    {/* Button take picture */}
+                    <button
+                      type="button"
+                      onClick={() => setIsCaptureModalOpen(true)}
+                      className="w-fit border border-[#E0E0E0] px-[1rem] py-1 flex gap-1 items-center hover:bg-[#f7f6f6] rounded-[8px] cursor-pointer shadow"
+                    >
+                      <Upload className="w-[0.875rem] h-[0.875rem]" strokeWidth={3} />
+                      <span className="text-[#1D1F20] text-[0.875rem] font-semibold">Take a Picture</span>
+                    </button>
+
+                    {fieldState.error && <p className="text-red-500 text-[0.75rem]">{fieldState.error.message}</p>}
+                  </>
+                )}
+              />
             </div>
 
             {/* Full name */}
@@ -254,7 +333,7 @@ const ApplyJobPage = () => {
               />
             )}
 
-            {/* date of birth */}
+            {/* Date of Birth */}
             {renderField.dateOfBirth && (
               <Controller
                 name="dateOfBirth"
@@ -275,6 +354,7 @@ const ApplyJobPage = () => {
               />
             )}
 
+            {/* Gender */}
             {renderField.gender && (
               <Controller
                 name="gender"
@@ -298,6 +378,7 @@ const ApplyJobPage = () => {
               />
             )}
 
+            {/* Domicile */}
             {renderField.domicile && (
               <Controller
                 name="domicile"
@@ -320,6 +401,7 @@ const ApplyJobPage = () => {
               />
             )}
 
+            {/* Phone number (dumyy data) */}
             {renderField.phoneNumber && (
               <Controller
                 name="phoneNumber"
@@ -337,6 +419,7 @@ const ApplyJobPage = () => {
               />
             )}
 
+            {/* Email */}
             {renderField.email && (
               <Controller
                 name="email"
@@ -357,6 +440,7 @@ const ApplyJobPage = () => {
               />
             )}
 
+            {/* Linkedin */}
             {renderField.linkedin && (
               <Controller
                 name="linkedin"
@@ -367,7 +451,7 @@ const ApplyJobPage = () => {
                     {...field}
                     label="Link Linkedin"
                     placeholder="https://www.linkedin.com/in/username"
-                    required={!!rules.linkedin?.pattern}
+                    required={!!rules.linkedin?.required}
                     className="relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040]
                  focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11 max-h-[40px]"
                     errorMessage={fieldState.error?.message}
@@ -377,7 +461,7 @@ const ApplyJobPage = () => {
             )}
           </form>
 
-          {/* Apply footer */}
+          {/* Apply Action */}
           <div className="w-full">
             <button
               type="submit"
@@ -390,6 +474,7 @@ const ApplyJobPage = () => {
         </div>
       )}
       <Toaster position="bottom-left" />
+      {isCaptureModalOpen && <HandCaptureModal onClose={() => setIsCaptureModalOpen(false)} onCaptureSuccess={handleCaptureSuccess} />}
     </div>
   );
 };

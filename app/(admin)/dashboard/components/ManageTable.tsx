@@ -8,12 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 type Attribute = { key: string; label: string; value: string; order: number };
 type Candidate = { id: string; attributes: Attribute[] };
 
-// *************** HEADER SELECT ***************
+// ********** Local Interface **********
 interface SelectHeaderProps {
   allRowsSelected: boolean;
   toggleAllRows: (checked: boolean) => void;
 }
 
+// ********** Generate component **********
 const SelectHeader: React.FC<SelectHeaderProps> = ({ allRowsSelected, toggleAllRows }) => (
   <Checkbox
     checked={allRowsSelected}
@@ -26,9 +27,9 @@ const SelectHeader: React.FC<SelectHeaderProps> = ({ allRowsSelected, toggleAllR
   />
 );
 
-// *************** KOMPONEN UTAMA ***************
+// ********** Main Component **********
 const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
-  // *************** TRANSFORM DATA ***************
+  // ********** TRANSFORM DATA **********
   const flatData = useMemo(() => {
     return data.map((cand) => {
       const row: Record<string, any> = {};
@@ -37,9 +38,11 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
     });
   }, [data]);
 
+  console.log(data, 'ini data di tabel')
+
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // *************** KOLOM DARI ATTRIBUTES ***************
+  // ********** COLUMN FROM ATTRUBUTS **********
   const [cols, setCols] = useState<any[]>([]);
   
   useEffect(() => {
@@ -48,18 +51,18 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
 
     const containerWidth = containerRef.current.clientWidth;
 
-    // ambil attributes dan sort by order
+    // sort by order from attributes
     const sorted = [...data[0].attributes].sort((a, b) => a.order - b.order);
 
-    // hitung dulu total fixed width
-    const fixedColsWidth = 50 + 180; // select + full_name (atau name)
-    const resizableColsCount = sorted.length - 1; // sisakan 1 buat full_name
+    // count the total width
+    const fixedColsWidth = 50 + 180; 
+    const resizableColsCount = sorted.length - 1;
 
     const equalWidth = Math.floor(
       (containerWidth - fixedColsWidth) / Math.max(resizableColsCount, 1)
     );
 
-    // generate kolom
+    // generate column
     const generated = [
       {
         accessorKey: "select",
@@ -107,7 +110,7 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
     setColSizes(cols.map((c) => c.size));
   }, [cols]);
 
-  // *************** STATE ***************
+  // ********** STATE **********
   const [sorting, setSorting] = useState<{ key: string; direction: "asc" | "desc" | "" }>({
     key: "",
     direction: "",
@@ -120,7 +123,7 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
-  // *************** RESIZE ***************
+  // ********** RESIZE **********
   const startResize = useCallback((e: React.MouseEvent | React.TouchEvent, index: number) => {
     if (!cols[index].enableResizing) return;
     e.stopPropagation();
@@ -175,7 +178,7 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
     };
   }, [isResizing, handleResizeMove, stopResize]);
 
-  // *************** REORDER ***************
+  // ********** REORDER **********
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
@@ -213,7 +216,7 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
     dragOverItem.current = null;
   };
 
-  // *************** SORTING ***************
+  // ********** SORTING **********
   const handleSortClick = (key: string, enable: boolean) => {
     if (!enable || isResizing) return;
     setSorting((prev) => {
@@ -262,7 +265,7 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
     });
   };
 
-  // *************** RENDER ***************
+  // ********** RENDER **********
   const totalWidth = colSizes.reduce((sum, s) => sum + s, 0);
 
   return (

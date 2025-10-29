@@ -15,6 +15,7 @@ import InputText from '@/app/components/input/InputText';
 import { JobsData } from '@/app/models/adminModel';
 import { JobListCardSkeleton } from '@/app/components/skeletons/adminSkeletons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useUserStore } from '@/app/store/userStore';
 
 import { JobListCard } from './JobListCard';
 import { AddJobDialog } from './components/AddJobDialog';
@@ -26,10 +27,11 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const isAvailableJobs = jobs.length > 0;
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const { profile } = useUserStore();
 
   const fetchJobs = async (query = '') => {
     setIsLoading(true);
-    let supabaseQuery = supabase.from('jobs').select('*').order('created_at', { ascending: false });
+    let supabaseQuery = supabase.from('jobs').select('*').eq('owner_id', profile?.id).order('created_at', { ascending: false });
 
     if (query) {
       supabaseQuery = supabaseQuery.ilike('title', `%${query}%`);

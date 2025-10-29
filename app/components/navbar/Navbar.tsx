@@ -87,15 +87,15 @@ const Navbar = ({title, userDetail, candidatePage = false}: NavbarProps) => {
       <Dialog open={openLogoutDialog} onOpenChange={(open) => setOpenLogoutDialog(open)}>
         <DialogContent className="w-[400px]">
           <DialogHeader>
-            <DialogTitle>Konfirmasi Logout</DialogTitle>
+            <DialogTitle>Logout Confirmation</DialogTitle>
           </DialogHeader>
-          <p>Yakin untuk keluar ?</p>
+          <p>Exit the platform ?</p>
           <DialogFooter className="flex justify-end gap-2 mt-4">
             <Button className='cursor-pointer' variant="outline" onClick={() => setOpenLogoutDialog(false)}>
-              Tidak
+              No
             </Button>
             <Button className='cursor-pointer bg-(--error-color) hover:bg-(--error-color)/80' onClick={handleLogout}>
-              Ya
+              Yes
             </Button>
           </DialogFooter>
         </DialogContent>

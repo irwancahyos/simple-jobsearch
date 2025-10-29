@@ -257,7 +257,7 @@ const ApplyJobPage = () => {
               onClick={() => router.push('/jobs')}
               className="w-[1.75rem] h-[1.75rem] bg-white hover:bg-[#f7f7f7] border p-1 shadow cursor-pointer border-[#E0E0E0] rounded-[8px] flex justify-center items-center"
             >
-              <ArrowLeft strokeWidth={3} className="w-[1.25] h-[1.25] text-[#333333] font-semibold" />
+              <ArrowLeft strokeWidth={2} className="w-[1.25] h-[1.25] text-[#333333] font-semibold" />
             </button>
             <div className="flex-1 flex justify-between items-center">
               <h1 className="text-[#1D1F20] text-[1.125rem] font-semibold">{job?.title}</h1>

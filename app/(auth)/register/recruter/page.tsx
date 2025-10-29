@@ -69,11 +69,11 @@ const RecruiterRegister = () => {
       <div className="w-full flex flex-col gap-3">
         {/* ********** Header ********** */}
         <div className="flex flex-col gap-[8px]">
-          <h1 className="text-[#404040] text-[1.25rem] font-semibold">Bergabung dengan Rakamin</h1>
+          <h1 className="text-[#404040] text-[1.25rem] font-semibold">Join with Rakamin</h1>
           <p className="text-[0.875rem] font-normal text-[#404040]">
-            Sudah punya akun?{' '}
+            Already have an account ?{' '}
             <Link className="underline text-(--secondary-color)" href="/login">
-              Masuk
+              Login
             </Link>
           </p>
         </div>
@@ -86,17 +86,17 @@ const RecruiterRegister = () => {
               name="email"
               control={control}
               rules={{
-                required: 'Email wajib diisi',
+                required: 'Email is required',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Format email tidak valid',
+                  message: 'Email pattern is not valid',
                 },
               }}
               render={({ field }) => (
                 <InputText
                   {...field}
                   placeholder="Ex. dio@raka.com"
-                  label="Alamat email"
+                  label="Email address"
                   errorMessage={errors?.email?.message}
                   className={`relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11 max-h-[40px]`}
                 />
@@ -108,10 +108,10 @@ const RecruiterRegister = () => {
               name="password"
               control={control}
               rules={{
-                required: 'Kata sandi wajib diisi',
+                required: 'Password is required',
                 minLength: {
                   value: 6,
-                  message: 'Kata sandi minimal 6 karakter',
+                  message: 'Min 6 digit for password',
                 },
               }}
               render={({ field }) => (
@@ -127,7 +127,7 @@ const RecruiterRegister = () => {
                       <EyeOff size={14} onClick={() => setIsOpenEye(!isOpenEye)} className="cursor-pointer" />
                     )
                   }
-                  label="Kata sandi"
+                  label="Password"
                   className={`relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-11 max-h-[40px]`}
                 />
               )}
@@ -146,10 +146,10 @@ const RecruiterRegister = () => {
             {isSubmitting ? (
               <div className="flex items-center gap-1.5">
                 <span className="w-4 h-4 border-2 border-(--secondary-color) border-t-transparent rounded-full animate-spin"></span>
-                Menunggu...
+                Waiting...
               </div>
             ) : (
-              'Daftar'
+              'Register'
             )}
           </button>
         </form>

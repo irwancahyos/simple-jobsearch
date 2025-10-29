@@ -8,23 +8,23 @@ const JoinAsComponent = () => {
       <div className="w-full flex flex-col gap-3">
         {/* ********** Header ********** */}
         <div className="flex flex-col gap-[8px]">
-          <h1 className="text-[#404040] text-[1.25rem] font-semibold">Bergabung dengan Rakamin</h1>
+          <h1 className="text-[#404040] text-[1.25rem] font-semibold">Join with Rakamin</h1>
           <p className="text-[0.875rem] font-normal text-[#404040]">
-            Sudah punya akun?{' '}
+            Already have an account?{' '}
             <Link className="underline text-(--secondary-color)" href={'/login'}>
-              Masuk
+              Login
             </Link>
           </p>
         </div>
         <div className="flex flex-col gap-[8px]">
-          <p className="text-[0.875rem] font-normal text-[#404040]">Masuk sebagai ?</p>
+          <p className="text-[0.875rem] font-normal text-[#404040]">Register As ?</p>
         </div>
 
         {/* ********** Content ********** */}
         <div className="flex flex-col gap-[8px]">
           <Link href={'/register/recruter'} className="w-full">
             <button className="px-[1rem] py-[6px] w-full flex cursor-pointer justify-center items-center rounded-[8px] shadow bg-[#FBC037] hover:bg-[#f6b92b] text-[#404040] font-semibold">
-              Pencari Kandidat
+              Recruiter
             </button>
           </Link>
           <div className="flex w-full gap-[12px] items-center">
@@ -34,7 +34,7 @@ const JoinAsComponent = () => {
           </div>
           <Link href={'/register/candidate'} className="w-full">
             <button className="px-[1rem] py-[6px] w-full flex cursor-pointer justify-center items-center rounded-[8px] shadow bg-[#FBC037] hover:bg-[#f6b92b] text-[#404040] font-semibold">
-              Kandidat  
+              Job Seekers
             </button>
           </Link>
         </div>

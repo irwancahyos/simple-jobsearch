@@ -77,7 +77,7 @@ const JobsComponent = () => {
     'freelance': 'Freelance',
   };
   return (
-    <div className={cn('w-full max-w-[1400px] h-[86vh] mx-auto flex justify-center', jobs.length < 1 && !isLoading && 'items-center')}>
+    <div className={cn('w-full max-w-[1400px] h-[86vh] mx-auto flex justify-center xl:px-[100px]', jobs.length < 1 && !isLoading && 'items-center')}>
       {/* ********** Wrapper ********** */}
       {jobs?.length > 0 || (jobs?.length < 1 && isLoading) ? (
         <div className="flex flex-1 gap-6 overflow-hidden">

@@ -19,8 +19,10 @@ type RegisterCandidateForm = {
 
 // ********** Main Component **********
 const CandidateRegister = () => {
-  const [isOpenEye, setIsOpenEye] = useState(false);
+  
   const router = useRouter();
+  const [isOpenEye, setIsOpenEye] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     control,
@@ -34,6 +36,7 @@ const CandidateRegister = () => {
 
   // ********** Handle Submit **********
   const onSubmit = async (data: RegisterCandidateForm) => {
+    setIsLoading(true);
     try {
       const emailTrimmed = data.email.trim().toLowerCase();
 
@@ -60,6 +63,8 @@ const CandidateRegister = () => {
       router.push('/jobs');
     } catch (err: any) {
       toast.error(err.message || 'Gagal membuat akun, coba lagi.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -137,13 +142,13 @@ const CandidateRegister = () => {
           {/* ********** Submit Button ********** */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isLoading || isSubmitting}
             className={cn(
               'px-[1rem] py-[6px] w-full flex justify-center items-center rounded-[8px] shadow bg-[#FBC037] hover:bg-[#f6b92b] text-[#404040] font-semibold disabled:opacity-60',
-              isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer',
+              isLoading || isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer',
             )}
           >
-            {isSubmitting ? (
+            {isLoading || isSubmitting ? (
               <div className="flex items-center gap-1.5">
                 <span className="w-4 h-4 border-2 border-(--secondary-color) border-t-transparent rounded-full animate-spin"></span>
                 Waiting...

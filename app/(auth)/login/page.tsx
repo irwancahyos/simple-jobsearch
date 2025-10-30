@@ -22,6 +22,7 @@ type LoginForm = {
 // ********** Main Component **********
 const LoginComponent = () => {
   const { setProfile } = useUserStore();
+  const [isLoading, setIsLoading] = useState(false);
   const [isOpenEye, setIsOpenEye] = useState(false);
   const router = useRouter();
 
@@ -35,6 +36,7 @@ const LoginComponent = () => {
   });
 
   const onSubmit = async (data: LoginForm) => {
+    setIsLoading(true);
     try {
       const emailTrimmed = data.email.trim().toLowerCase();
 
@@ -83,6 +85,8 @@ const LoginComponent = () => {
       }
     } catch (err: any) {
       toast.error(err.message || 'random error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -160,13 +164,13 @@ const LoginComponent = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isLoading || isSubmitting }
             className={cn(
               'px-[1rem] py-[6px] w-full flex justify-center items-center rounded-[8px] shadow bg-[#FBC037] hover:bg-[#f6b92b] text-[#404040] font-semibold disabled:opacity-60',
-              isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer',
+              isLoading || isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer',
             )}
           >
-            {isSubmitting ? (
+            {isSubmitting || isLoading ? (
               <div className="flex items-center gap-1.5">
                 <span className="w-4 h-4 border-2 border-(--secondary-color) border-t-transparent rounded-full animate-spin"></span>
                 Waiting...

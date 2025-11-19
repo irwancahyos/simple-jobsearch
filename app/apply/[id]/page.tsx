@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { useForm, Controller } from "react-hook-form";
 
-import uploadImageAvatar from '../../../asset/image/upload-avatar.png';
+import uploadImageAvatar from '@/asset/image/upload-avatar.png';
 import { DOMICILE } from "@/data/domicile";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from '@/lib/supabaseClient';

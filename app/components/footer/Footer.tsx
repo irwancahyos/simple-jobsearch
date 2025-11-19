@@ -3,7 +3,7 @@ export const Footer = () => {
     <footer className="flex flex-col">
       <div className="flex justify-between items-center flex-col md:flex-row gap-y-6">
         <div className="w-full md:max-w-[20rem] text-[0.875rem] text-center md:text-left">
-          <p>PT. Hardwork Digital Eropa</p>
+          <p>Optiiion Digital Careers</p>
           <p className="text-[rgb(117,117,117)] mt-[8px]">Menara Angin - Jl. Merapi Golf, Sleman, Kecamatan Cangkringan, Yogyakarta, DI Yogyakrata 11111</p>
         </div>
         <div className="flex w-full md:w-auto gap-y-3">

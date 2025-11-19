@@ -1,7 +1,7 @@
 'use client'
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import ThankyouImage from '../../asset/image/Thankyou.png';
+import ThankyouImage from '@/asset/image/Thankyou.png';
 
 const Thankyou = () => {
   const router = useRouter();

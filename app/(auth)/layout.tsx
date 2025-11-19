@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import rakaminImage from '../../asset/image/rakamin-logo-1.png';
+import rakaminImage from '@/asset/image/Optiiion-new-logo.png';
 
 export default function AuthLayout({
   children,
@@ -9,9 +9,9 @@ export default function AuthLayout({
 }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
-      <div className="w-[90vw] md:w-[31.25rem] flex flex-col gap-[24px]">
+      <div className="w-[90vw] md:w-[31.25rem] flex flex-col gap-[16px]">
         <div>
-          <Image width={145} height={100} src={rakaminImage?.src} alt="This image of rakamin logo" />
+          <Image width={200} height={100} src={rakaminImage?.src} alt="This image of rakamin logo" />
         </div>
         {children}
       </div>

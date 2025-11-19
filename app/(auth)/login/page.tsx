@@ -96,7 +96,7 @@ const LoginComponent = () => {
       <div className="w-full flex flex-col gap-3">
         {/* Header */}
         <div className="flex flex-col gap-[8px]">
-          <h1 className="text-[#404040] text-[1.25rem] font-semibold">Join with Rakamin</h1>
+          <h1 className="text-[#404040] text-[1.25rem] font-semibold">Join with Optiiion</h1>
           <p className="text-[0.875rem] font-normal text-[#404040]">
             Don't have an account ?{' '}
             <Link className="underline text-(--secondary-color)" href="/register">

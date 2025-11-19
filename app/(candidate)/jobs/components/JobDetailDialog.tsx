@@ -13,7 +13,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import jobsCardImage from '../../../../asset/image/rakamin-logo-square.png';
+import jobsCardImage from '@/asset/image/main-logo-platform.png';
 import { cn } from "@/lib/utils";
 
 // ********** Local Interface **********

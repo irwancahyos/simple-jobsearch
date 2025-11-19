@@ -7,9 +7,9 @@ import Image from 'next/image';
 import type { Landmark, HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import type { HandLandmarker } from '@mediapipe/tasks-vision';
 
-import imageFirstPose from '../../../asset/image/pose-1.png';
-import imageSecondPose from '../../../asset/image/pose-2.png';
-import imageThirdPose from '../../../asset/image/pose-3.png';
+import imageFirstPose from '@/asset/image/pose-1.png';
+import imageSecondPose from '@/asset/image/pose-2.png';
+import imageThirdPose from '@/asset/image/pose-3.png';
 
 // ********** Local Interface **********
 type PoseStatus = 'INIT' | 'LOADING' | 'CAMERA_READY' | 'POSE_1' | 'POSE_2' | 'POSE_3' | 'CAPTURED' | 'ERROR';

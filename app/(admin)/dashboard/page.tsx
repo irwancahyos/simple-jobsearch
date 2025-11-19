@@ -5,8 +5,8 @@ import { Search, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
-import addNewJobImage from '../../../asset/image/image-add-job.jpg';
-import emptyJobListImage from '../../../asset/image/image-no-job.png';
+import addNewJobImage from '@/asset/image/image-add-job.jpg';
+import emptyJobListImage from '@/asset/image/image-no-job.png';
 
 import { supabase } from '@/lib/supabaseClient';
 import { cn } from '@/lib/utils';

@@ -92,7 +92,7 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
                     href={String(value)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#01959F] hover:text-[#037982] underline truncate"
+                    className={cn(value !== '-' && 'text-[#01959F] hover:text-[#037982] underline truncate')}
                   >
                     {String(value).split("/").pop()}
                   </a>

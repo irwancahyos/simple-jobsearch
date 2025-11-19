@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-import jobsCardImage from '../../../asset/image/rakamin-logo-square.png';
-import noJobsExistImasge from '../../../asset/image/image-no-job.png';
+import jobsCardImage from '@/asset/image/main-logo-platform.png';
+import noJobsExistImasge from '@/asset/image/image-no-job.png';
 
 import JobCard from "./components/JobCard";
 import JobDetailDialog from "./components/JobDetailDialog";

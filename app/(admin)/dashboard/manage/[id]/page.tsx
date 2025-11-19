@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import ManageTable from "../../components/ManageTable";
-import noCandidateFound from '../../../../../asset/image/No Candidate Found.png'
+import noCandidateFound from '@/asset/image/No Candidate Found.png'
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { ManageJobSkeleton } from "@/app/components/skeletons/adminSkeletons";
@@ -60,8 +60,11 @@ export default function ManageJobPage() {
   return (
     <div className="w-full flex min-h-[86vh] max-w-[1400px] m-auto">
       <div className="flex flex-col gap-[24px] flex-1 overflow-x-hidden">
-        <div>
+        <div className="flex justify-between items-center">
           <h2 className="text-[1.125rem] text-[#1D1F20] font-semibold">{jobTitle || 'Front end Dev'}</h2>
+          <div>
+            <p>sadkfjsdhaf</p>
+          </div>
         </div>
         <div className={cn('h-full border border-[#E0E0E0] rounded-[8px] p-[24px]', !applicants?.length && 'flex flex-1')}>
           {/* Table */}

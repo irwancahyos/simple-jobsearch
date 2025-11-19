@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Banknote, MapPin } from "lucide-react";
 
-import jobsCardImage from '../../../../asset/image/rakamin-logo-square.png';
+import jobsCardImage from '@/asset/image/main-logo-platform.png';
 import { JobsData } from "@/app/models/adminModel";
 import { cn, formatRupiah } from "@/lib/utils";
 

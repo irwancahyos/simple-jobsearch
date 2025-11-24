@@ -38,8 +38,6 @@ const ManageTable: React.FC<{ data: Candidate[] }> = ({ data }) => {
     });
   }, [data]);
 
-  console.log(data, 'ini data di tabel')
-
   const containerRef = useRef<HTMLDivElement>(null);
 
   // ********** COLUMN FROM ATTRUBUTS **********

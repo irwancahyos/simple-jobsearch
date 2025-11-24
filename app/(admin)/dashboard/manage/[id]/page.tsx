@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import ManageTable from "../../components/ManageTable";
@@ -9,6 +9,11 @@ import noCandidateFound from '@/asset/image/No Candidate Found.png'
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { ManageJobSkeleton } from "@/app/components/skeletons/adminSkeletons";
+import { Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import InputText from "@/app/components/input/InputText";
+import toast from "react-hot-toast";
 
 // *************** Local interface and types ***************
 type Applicant = {
@@ -33,37 +38,48 @@ export default function ManageJobPage() {
 
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [openFilter, setOpenFilter] = useState(false);
+  const [searchName, setSearchName] = useState('');
 
-    useEffect(() => {
+  const fetchApplicants = async (queryName = '') => {
+    setIsLoading(true);
+    let supabaseQuery = supabase.from('applications').select('*').eq('job_id', jobId).order('created_at', { ascending: false });
+
+    if(queryName) {
+      supabaseQuery = supabaseQuery.ilike('applicant_name', `%${queryName}%`);     
+    }
+
+    const {error, data} = await supabaseQuery;
+
+    if (error) {
+      toast.error('Error when fetch applicant');
+      setApplicants([]);
+    } else {
+      setApplicants(data || []);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
     if (!jobId) return;
 
-    const fetchApplicants = async () => {
-      setIsLoading(true);
-      const { data, error } = await supabase
-        .from('applications')
-        .select('*')
-        .eq('job_id', jobId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching applicants:', error);
-        setApplicants([]);
-      } else {
-        setApplicants(data || []);
-      }
-      setIsLoading(false);
-    };
-
-    fetchApplicants();
-  }, [jobId]);
+    fetchApplicants(searchName);
+  }, [jobId, searchName]);
 
   return (
     <div className="w-full flex min-h-[86vh] max-w-[1400px] m-auto">
-      <div className="flex flex-col gap-[24px] flex-1 overflow-x-hidden">
+      <div className="flex flex-col gap-[24px] flex-1 overflow-x-hidden relative">
         <div className="flex justify-between items-center">
           <h2 className="text-[1.125rem] text-[#1D1F20] font-semibold">{jobTitle || 'Front end Dev'}</h2>
           <div>
-            <p>sadkfjsdhaf</p>
+            <Button
+              onClick={() => setOpenFilter(!openFilter)}
+              disabled={isLoading}
+              variant={'ghost'}
+              className={cn('p-0! shadow-none hover:bg-transparent group/filter', !isLoading && 'cursor-pointer')}
+            >
+              <Filter size={16} className="group-hover/filter:opacity-50" />
+            </Button>
           </div>
         </div>
         <div className={cn('h-full border border-[#E0E0E0] rounded-[8px] p-[24px]', !applicants?.length && 'flex flex-1')}>
@@ -98,7 +114,7 @@ export default function ManageJobPage() {
               </div>
 
               {/* Temporary on Mobile */}
-              <div className="md:hidden flex flex-col gap-4 overflow-y-auto max-h-[70vh]">
+              <div className="md:hidden relative flex flex-col gap-4 overflow-y-auto max-h-[70vh]">
                 {applicants.map((el) => {
                   const flat: Record<string, string> = {};
                   el.attributes.forEach((attr) => {
@@ -167,7 +183,59 @@ export default function ManageJobPage() {
             </div>
           )}
         </div>
+
+        <div className="absolute top-8 left-24">
+          <TableFilterPopup sendSearchedName={(name) => setSearchName(name)} onOpenChange={setOpenFilter} open={openFilter} />
+        </div>
       </div>
     </div>
+  );
+}
+
+interface TableFilterProps {
+  open: boolean;
+  onOpenChange?: Dispatch<SetStateAction<boolean>>
+  sendSearchedName?: (name: string) => void;
+}
+
+const TableFilterPopup = ({onOpenChange, open, sendSearchedName}: TableFilterProps) => {
+
+  const [searchName, setSearchName] = useState('');
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if(debounceTimeout?.current) clearTimeout(debounceTimeout?.current);
+
+    debounceTimeout.current = setTimeout(() => {
+      // action
+      sendSearchedName?.(searchName);
+    }, 300)
+
+    return () => {
+      if(debounceTimeout?.current) clearTimeout(debounceTimeout?.current);
+    }
+
+  }, [searchName]);
+  return (
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger className="pr-0 sr-only" asChild>
+        <Button
+          variant="ghost"
+          role="combobox"
+          aria-expanded={open}
+          className="flex items-center gap-1 px-3 min-w-[70px] justify-between"
+        ></Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-56 px-2 py-1">
+        <div className="flex gap-1.5 flex-col">
+          <div>
+            <p className="text-[10px] opacity-80">Search base on name</p>
+          </div>
+          <div className="w-full">
+            <InputText onChange={(event) => setSearchName(event?.target?.value)} className="relative flex items-center rounded-[8px] border-2 border-[#EDEDED] bg-white text-[#404040] focus-within:border-[#01959F] duration-300 text-[0.875rem] min-h-7 max-h-9" />
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

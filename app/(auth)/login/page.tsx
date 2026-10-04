@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import InputText from '@/app/components/input/InputText';
 import { supabase } from '@/lib/supabaseClient';
@@ -25,6 +25,8 @@ const LoginComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpenEye, setIsOpenEye] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
 
   const {
     control,
@@ -79,7 +81,7 @@ const LoginComponent = () => {
       if (profile.role === 'recruiter') {
         router.push('/dashboard')
       } else if (profile.role === 'candidate') {
-        router.push('/jobs')
+        router.push(returnTo?.startsWith('/apply/') ? returnTo : '/jobs')
       } else {
         toast.error('Role is not valid');
       }

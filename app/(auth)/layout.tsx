@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { Suspense } from "react";
 import rakaminImage from '@/asset/image/Optiiion-new-logo.png';
 
 export default function AuthLayout({
@@ -13,7 +13,7 @@ export default function AuthLayout({
         <div>
           <Image width={200} height={100} src={rakaminImage?.src} alt="This image of rakamin logo" />
         </div>
-        {children}
+        <Suspense fallback={null}>{children}</Suspense>
       </div>
     </div>
   )

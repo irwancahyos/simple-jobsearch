@@ -14,21 +14,11 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  if (pathname.startsWith('/jobs')) {
+  if (pathname.startsWith('/apply') || pathname.startsWith('/thankyou')) {
     if (role !== 'candidate') {
-      return NextResponse.redirect(new URL('/login', req.url));
-    }
-  }
-
-  if (pathname.startsWith('/apply')) {
-    if (role !== 'candidate') {
-      return NextResponse.redirect(new URL('/login', req.url));
-    }
-  }
-
-  if (pathname.startsWith('/thankyou')) {
-    if (role !== 'candidate') {
-      return NextResponse.redirect(new URL('/login', req.url));
+      const loginUrl = new URL('/login', req.url);
+      loginUrl.searchParams.set('returnTo', `${pathname}${req.nextUrl.search}`);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
@@ -37,5 +27,5 @@ export function middleware(req: NextRequest) {
 
 // Tentukan path yang mau di-protect
 export const config = {
-  matcher: ['/dashboard/:path*', '/jobs/:path*', '/apply/:path*'],
+  matcher: ['/dashboard/:path*', '/apply/:path*', '/thankyou/:path*'],
 };

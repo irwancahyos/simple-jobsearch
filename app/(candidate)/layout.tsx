@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense } from 'react';
+
 import { Footer } from '../components/footer/Footer';
 import Navbar from '../components/navbar/Navbar';
 
@@ -7,7 +9,9 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
   return (
     <div className="bg-white/10">
       <div className="flex flex-col pt-16">
-        <Navbar candidatePage />
+        <Suspense fallback={<div className="h-14 shadow-md" />}>
+          <Navbar title="Job List" candidatePage />
+        </Suspense>
         <main className="flex-1 flex px-5 py-5 justify-center">{children}</main>
       </div>
       <div className="w-full px-5">
